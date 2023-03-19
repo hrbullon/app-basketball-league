@@ -1,14 +1,51 @@
 const GameModel = require("../models/GameModel");
 const GameScoreBoardModel = require("../models/GameScoreBoardModel");
+const  GameTeamsModel  = require("../models/GameTeamsModel");
+const TeamModel = require("../models/TeamModel");
+
+const getInfoGame = async (game_id) => {
+
+    const game = await GameModel.findByPk(game_id);
+    const teams = await GameTeamsModel.findAll({
+        where: {
+            game_id: game_id
+        }
+    });
+
+    const team_a = await TeamModel.findByPk(teams[0].team_id);
+    const team_b = await TeamModel.findByPk(teams[1].team_id);
+
+    const info = {
+        game_id: game.id,
+        description: game.description,
+        date: game.date,
+        hour: game.hour,
+        quarter: teams[1].quarter,
+        team_a: {
+            id: teams[0].team_id,
+            description: team_a.name,
+            score: teams[0].score,
+            fouls: teams[0].fouls,
+        },
+        team_b: {
+            id: teams[1].team_id,
+            description: team_b.name,
+            score: teams[1].score,
+            fouls: teams[1].fouls,
+        }
+    }
+
+    return info;
+}
 
 const getGame = async (req, res) => {
     try {
-        const game = await GameModel.findByPk(req.params.id);
-        res.json({ game })
+        const game = await getInfoGame(req.params.id);
+        res.json({ message: "Ok", game });
     } catch (error) {
         res.json({ message: error.message });
     }
-}
+} 
 
 const createGame = async (req, res) => {
     try {
@@ -21,37 +58,28 @@ const createGame = async (req, res) => {
 
 const updateScore = async (req, res) => {
     
-    const { game_id, score, team_a_id } = req.body;
+    const io = req.app.get('socketio');
+    const { game_id, team_id, player_id, quarter, score, foul  } = req.body;
 
     try {
-        const game = await GameModel.findByPk(game_id);
+        const gameModel = await GameModel.findByPk(game_id);
 
-        if(game){
-
-            let updateModel = {}
+        if(gameModel){
 
             const scoreBoard = await GameScoreBoardModel.create({
-                game_id: req.body.game_id,
-                team_id: req.body.team_id,
-                player_id: req.body.player_id,
-                score: req.body.score,
-                foul: req.body.foul,
-            });
-
-            if(team_a_id > 0){
-                updateModel = { team_a_score: (parseInt(game.team_a_score)+parseInt(score)) };
-            }else{
-                updateModel = { team_b_score: (parseInt(game.team_b_score)+parseInt(score)) };
-            }
-            
-            GameModel.update( updateModel, { where: { id: game_id} })
-            .then(game => {
-                res.json({ message: "Ok", game });
+                game_id: game_id,
+                team_id: team_id,
+                player_id: player_id,
+                quarter: quarter,
+                score: score,
+                foul: foul,
             })
-            .catch(err => {
-                res.json({ message: "Error" });
-            });
 
+           const gameUpdated = await getInfoGame(game_id);
+
+           io.emit("evt_game_scoreboard_inserted", gameUpdated);
+           res.json({ message: "Ok", gameModel });
+   
         }
 
     }catch (error) {

@@ -6,6 +6,7 @@ const GameScoreBoardModel = db.define('GameScoreBoard', {
   game_id: DataTypes.INTEGER,
   team_id: DataTypes.INTEGER,
   player_id: DataTypes.INTEGER,
+  quarter: DataTypes.TINYINT,
   score: DataTypes.TINYINT,
   foul: DataTypes.TINYINT
 },{

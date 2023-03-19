@@ -1,50 +1,91 @@
 import React, { Fragment, useState, useEffect } from 'react'
+import { getGame } from '../../requests/gameRequest';
 
+//****SockET Connection****/
+import { socket } from "../../sockets/SocketClient";
 
 export const ScoreBoardClientScreen = () => {
-
-    const [duration, setDuration] = useState(600); // 10-minute duration in seconds
-    const [timerID, setTimerID] = useState(null);
-
+    
+    const [seconds, setSeconds] = useState(10 * 60);
+    const [isActive, setIsActive] = useState(false);
     const [game, setGame] = useState(
         {
-            description: 'Fase de grupo - Caimanes vs Cocodrilos',
+            description: '',
             team_a: {
-                id: 1,
-                description: 'Caimanes',
-                score: 22,
-                fouls: 2,
+                id: 0,
+                description: '',
+                score: 0,
+                fouls: 0,
             },
             team_b: {
-                id: 2,
-                description: 'Cocodrilos',
-                score: 32,
-                fouls: 3,
+                id: 0,
+                description: '',
+                score: 0,
+                fouls: 0,
             },
         }
     );
+      
+    useEffect( () => {
+        getDataGame(1);
+    }, [])
+
+    const getDataGame = async (id) => {
+        getGame(id).then( data => {
+            setGame(data.game);
+        });
+    }
+
+    useEffect(() => {
+        socket.on("evt_game_scoreboard_inserted", (model) => {
+            setIsActive(false);
+            setGame(model)
+        })
+
+        socket.on("evt_start_time", (model) => {
+            setIsActive(true);
+        })
+        
+        socket.on("evt_stop_time", (model) => {
+            setIsActive(false);
+        })
+    }, [])
     
     useEffect(() => {
-        setTimerID(setInterval(() => {
-        setDuration(prevDuration => prevDuration - 1);
-        }, 1000));
         
-        return () => clearInterval(timerID);
-    }, []);
+        let interval = null;
+        
+        if (isActive) {
+            
+            interval = setInterval(() => {
+            setSeconds((seconds) => seconds - 1);
+
+            }, 1000);
+        } else if (!isActive && seconds !== 0) {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+
+    }, [isActive, seconds]);
+    
+    const handleStart = () => {
+        setIsActive(true);
+    };
 
     const handlePause = () => {
-        clearInterval(timerID);
-        setTimerID(null);
-    }
+        setIsActive(false);
+    };
 
-    const handleResume = () => {
-        setTimerID(setInterval(() => {
-        setDuration(prevDuration => prevDuration - 1);
-        }, 1000));
-    }
+    const handleReset = () => {
+        setIsActive(false);
+        setSeconds(10 * 60);
+    };
 
-    const minutes = Math.floor(duration / 60);
-    const seconds = duration % 60;
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
 
     return (
     <Fragment>
@@ -58,7 +99,8 @@ export const ScoreBoardClientScreen = () => {
         <section className="timer">
             <div className="row">
                 <div className="col">
-                    <p>{minutes < 10 ? '0' :'' }{minutes}:{seconds  < 10 ? '0' : ''}{seconds}</p>
+                    <p>{formatTime(seconds)}</p>
+                    {/*<p>{minutes < 10 ? '0' :'' }{minutes}:{seconds  < 10 ? '0' : ''}{seconds}</p>*/}
                 </div>
             </div>
         </section>
@@ -74,11 +116,9 @@ export const ScoreBoardClientScreen = () => {
                 <div className="col-1 info foul">{`F${game.team_b.fouls}`}</div>
             </div>
         </section>
-        {timerID ? (
-            <button onClick={handlePause}>Pause</button>
-          ) : (
-            <button onClick={handleResume}>Resume</button>
-          )}
+        <button onClick={handleStart}>Start</button>
+        <button onClick={handlePause}>Pause</button>
+        <button onClick={handleReset}>Reset</button>
         <section className="score">
             <div className="row">
                 <div className="col-4">{ game.team_a.score }</div>
