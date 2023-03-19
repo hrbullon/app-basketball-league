@@ -1,0 +1,69 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+@font-face {
+  font-family: "DigiFont";
+  src: url("/fonts/7SEGMENTALDIGITALDISPLAY.ttf") format("truetype") ;
+}
+
+body {
+  background-color: black !important;
+}
+
+
+.timer p {
+  font-size: 250px;
+  font-family: DigiFont;
+  color: red;
+  text-align: center;
+  margin-top: -391px;
+}
+
+.timer-gray {
+  font-size: 250px;
+  font-family: DigiFont;
+  color: #cacaca44 !important;
+  text-align: center;
+
+}
+
+.teams .name {
+  font-size: 50px;
+  color: white;
+}
+
+.teams .info {
+  font-size: 70px;
+}
+
+.teams .foul {
+  color:yellow
+}
+
+.teams .time {
+  color:turquoise
+}
+
+.period {
+  font-size: 80px;
+  color: red;
+  margin-top: -120px !important;
+}
+
+.score {
+  color: yellow;
+  font-size: 200px;
+  font-family: DigiFont;
+  border: 1px solid yellow;
+  text-align: center;
+}
+
+
+@media print {
+  .no-print {
+    display: none;
+  }
+}
