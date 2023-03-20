@@ -1,13 +1,32 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 
 import { GameInfo } from '../../components/GameInfo';
 import { ScoreGame } from '../../components/ScoreGame';
 
 import { ScorePlayer } from '../../components/ScorePlayer';
+import { getGame } from '../../requests/gameRequest';
 
 export const ScoreBoardAdminScreen = () => {
     
     const picture = "https://placehold.co/128x128";
+
+    const [game, setGame] = useState(
+        {
+            description: '',
+            team_a: {
+                id: 0,
+                description: '',
+                score: 0,
+                fouls: 0,
+            },
+            team_b: {
+                id: 0,
+                description: '',
+                score: 0,
+                fouls: 0,
+            },
+        }
+    );
 
     const players = [
         {
@@ -44,23 +63,34 @@ export const ScoreBoardAdminScreen = () => {
         },
     ]
 
+    useEffect( () => {
+        getDataGame(1);
+    }, [])
+
+    const getDataGame = async (id) => {
+        getGame(id).then( data => {
+            setGame(data.game);
+        });
+    }
+
+
     return (
     <Fragment>
-        <div class="row mb-2">
-            <div class="col-12 mt-4">
-                <GameInfo />
+        <div className="row mb-2">
+            <div className="col-12 mt-4">
+                <GameInfo game={ game }/>
             </div>
         </div>
         <div className='row'>
-            <ScoreGame team="Caimanes" score={25} />
-            <ScoreGame team="Cocodrilos" score={23} />
+            <ScoreGame team={ game.team_a.description } score={ game.team_a.score } />
+            <ScoreGame team={ game.team_b.description } score={ game.team_b.score } />
         </div>
-        <div class="row">
+        <div className="row">
             <div className='col-6'>
-                <ScorePlayer team="Caimanes" players={ players }/>
+                <ScorePlayer players={ players }/>
             </div>        
             <div className='col-6'>
-                <ScorePlayer team="Cocodrilos" players={ players }/>
+                <ScorePlayer players={ players }/>
             </div>        
         </div>
     </Fragment>

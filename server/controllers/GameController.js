@@ -26,12 +26,14 @@ const getInfoGame = async (game_id) => {
             description: team_a.name,
             score: teams[0].score,
             fouls: teams[0].fouls,
+            players: []
         },
         team_b: {
             id: teams[1].team_id,
             description: team_b.name,
             score: teams[1].score,
             fouls: teams[1].fouls,
+            players: []
         }
     }
 

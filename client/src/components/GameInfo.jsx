@@ -1,36 +1,36 @@
 import React from 'react'
 
-export const GameInfo = () => {
+export const GameInfo = ({ game }) => {
   return (
-    <div class="card">
-        <div class="card-body">
-            <table class="table">
+    <div className="card">
+        <div className="card-body">
+            <table className="table">
                 <tbody>
                     <tr>
-                        <th>Equipo A: Caimanes</th>
-                        <th>Equipo B: Cocodrilos</th>
+                        <th>Equipo A: { game.team_a.description }</th>
+                        <th>Equipo B: { game.team_b.description }</th>
                     </tr>
                     <tr>
                         <td>
                             <b>Competición:</b> Torneo - 3x3 La Batea
                         </td>
                         <td>
-                            <b>Fecha:</b> 18/03/2023
+                            <b>Fecha:</b> { game.date }
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <b>Partido:</b> Fase de grupo - Caimanes vs Cocodrilos
+                            <b>Partido:</b> { game.description }
                         </td>
                         <td>
-                            <b>Hora:</b> 5:00 pm
+                            <b>Hora:</b> { game.hour }
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="2">
+                    {/*<tr>
+                        <td colSpan="2">
                             <b>Cancha:</b> Nilo Center
                         </td>
-                    </tr>
+                    </tr>*/}
                 </tbody>
             </table>
         </div>
