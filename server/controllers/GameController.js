@@ -1,42 +1,11 @@
+const { getDataGame } = require("../database/queries/gameQueries");
+const { getInfoGameFormat } = require("../formats/gameFormats");
+
 const GameModel = require("../models/GameModel");
-const GameScoreBoardModel = require("../models/GameScoreBoardModel");
-const  GameTeamsModel  = require("../models/GameTeamsModel");
-const TeamModel = require("../models/TeamModel");
 
 const getInfoGame = async (game_id) => {
-
-    const game = await GameModel.findByPk(game_id);
-    const teams = await GameTeamsModel.findAll({
-        where: {
-            game_id: game_id
-        }
-    });
-
-    const team_a = await TeamModel.findByPk(teams[0].team_id);
-    const team_b = await TeamModel.findByPk(teams[1].team_id);
-
-    const info = {
-        game_id: game.id,
-        description: game.description,
-        date: game.date,
-        hour: game.hour,
-        quarter: teams[1].quarter,
-        team_a: {
-            id: teams[0].team_id,
-            description: team_a.name,
-            score: teams[0].score,
-            fouls: teams[0].fouls,
-            players: []
-        },
-        team_b: {
-            id: teams[1].team_id,
-            description: team_b.name,
-            score: teams[1].score,
-            fouls: teams[1].fouls,
-            players: []
-        }
-    }
-
+    const game = await getDataGame(game_id);
+    const info = getInfoGameFormat(game);
     return info;
 }
 

@@ -1,10 +1,9 @@
 const db = require("../database/db.js")
 
 const { DataTypes } = require("sequelize");
-const TeamPlayerModel = require("./TeamPlayersModel.js");
 
 const PlayerModel = db.define('Player', {
-    firsname: DataTypes.STRING,
+    firstname: DataTypes.STRING,
     lastname: DataTypes.STRING,
     document: DataTypes.STRING,
     picture: DataTypes.STRING,
@@ -13,6 +12,5 @@ const PlayerModel = db.define('Player', {
     tableName: 'players'
 });
 
-PlayerModel.hasMany(TeamPlayerModel,{ foreignKey:'player_id' })
 
 module.exports = PlayerModel

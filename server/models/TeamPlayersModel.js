@@ -1,7 +1,6 @@
 const db = require("../database/db.js")
 
 const { DataTypes } = require("sequelize");
-const PlayerModel = require("./PlayerModel.js");
 
 const TeamPlayerModel = db.define('TeamPlayer', {
     team_id: DataTypes.INTEGER,
@@ -10,6 +9,5 @@ const TeamPlayerModel = db.define('TeamPlayer', {
 },{
     tableName: 'teams_players'
 });
-
 
 module.exports = TeamPlayerModel
