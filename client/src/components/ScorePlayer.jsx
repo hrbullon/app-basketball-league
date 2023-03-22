@@ -1,5 +1,5 @@
 import React from 'react'
-import { updateScore } from '../requests/gameRequest';
+import { getGame, updateScore } from '../requests/gameRequest';
 
 export const ScorePlayer = ({ game, team, setGame, players }) => {
 
@@ -17,28 +17,8 @@ export const ScorePlayer = ({ game, team, setGame, players }) => {
         }
 
         const res = await updateScore(1, data);
-
-        if(team == "a"){
-            setGame(prevGame => {
-                return {
-                  ...prevGame,
-                  team_a: {
-                    ...prevGame.team_a,
-                    score: (team == "a")? (scoreSum+game.team_a.score) : game.team_a.score
-                  }
-                };
-            });
-        }else if(team == "b"){
-            setGame(prevGame => {
-                return {
-                  ...prevGame,
-                  team_b: {
-                    ...prevGame.team_b,
-                    score: (team == "b")? (scoreSum+game.team_b.score) : game.team_b.score
-                  }
-                };
-            });
-        }
+        const modelGame = await getGame(1);
+        setGame(modelGame.game)
     }
 
     return (

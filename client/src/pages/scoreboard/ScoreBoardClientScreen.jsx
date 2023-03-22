@@ -32,7 +32,19 @@ export const ScoreBoardClientScreen = () => {
       
     useEffect( () => {
         getDataGame(1);
+
+        const localTime  = localStorage.getItem("seconds");
+        if(localTime){
+            setSeconds(localTime-1);
+        }
+
     }, [])
+
+    useEffect(() => {
+        console.log("acc")
+        //getDataGame(game.id);
+    }, [game])
+    
 
     const getDataGame = async (id) => {
         getGame(id).then( data => {
@@ -42,7 +54,6 @@ export const ScoreBoardClientScreen = () => {
 
     useEffect(() => {
         socket.on("evt_game_scoreboard_inserted", (model) => {
-            console.log(model)
             setIsActive(false);
             setGame(model)
         })
@@ -64,6 +75,7 @@ export const ScoreBoardClientScreen = () => {
             
             interval = setInterval(() => {
             setSeconds((seconds) => seconds - 1);
+            localStorage.setItem("seconds", seconds);
 
             }, 1000);
         } else if (!isActive && seconds !== 0) {
@@ -105,7 +117,6 @@ export const ScoreBoardClientScreen = () => {
             <div className="row">
                 <div className="col">
                     <p>{formatTime(seconds)}</p>
-                    {/*<p>{minutes < 10 ? '0' :'' }{minutes}:{seconds  < 10 ? '0' : ''}{seconds}</p>*/}
                 </div>
             </div>
         </section>
