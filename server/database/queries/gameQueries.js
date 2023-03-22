@@ -24,7 +24,7 @@ const getDataGame = async (game_id) => {
 
     return await GameModel.findOne({
         where:{ id: game_id },
-        attributes:['description','date','hour'],
+        attributes:['id','description','date','hour'],
         include:[
             {
                 model: TeamPlayerModel,

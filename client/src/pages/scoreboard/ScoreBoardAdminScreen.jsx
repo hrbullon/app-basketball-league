@@ -12,7 +12,7 @@ export const ScoreBoardAdminScreen = () => {
 
     const [game, setGame] = useState(
         {
-            game_id: 0,
+            id: 0,
             description: '',
             date: '',
             hour: '',
@@ -58,10 +58,10 @@ export const ScoreBoardAdminScreen = () => {
         </div>
         <div className="row">
             <div className='col-6'>
-                <ScorePlayer game={ game.id } setGame={setGame} players={ game.team_a.players }/>
+                <ScorePlayer game={ game } team="a" setGame={setGame} players={ game.team_a.players }/>
             </div>        
             <div className='col-6'>
-                <ScorePlayer game={ game.id } setGame={setGame} players={ game.team_b.players }/>
+                <ScorePlayer game={ game } team="b" setGame={setGame} players={ game.team_b.players }/>
             </div>        
         </div>
     </Fragment>

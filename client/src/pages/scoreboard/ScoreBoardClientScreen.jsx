@@ -11,17 +11,21 @@ export const ScoreBoardClientScreen = () => {
     const [game, setGame] = useState(
         {
             description: '',
+            date:'',
+            hour:'',
             team_a: {
                 id: 0,
                 description: '',
                 score: 0,
                 fouls: 0,
+                players:[]
             },
             team_b: {
                 id: 0,
                 description: '',
                 score: 0,
                 fouls: 0,
+                players:[]
             },
         }
     );
@@ -38,6 +42,7 @@ export const ScoreBoardClientScreen = () => {
 
     useEffect(() => {
         socket.on("evt_game_scoreboard_inserted", (model) => {
+            console.log(model)
             setIsActive(false);
             setGame(model)
         })

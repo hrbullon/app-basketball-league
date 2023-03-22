@@ -1,6 +1,6 @@
 const getInfoGameFormat = (game) => {
     return {
-        game_id: game.id,
+        id: game.id,
         description: game.description,
         date: game.date,
         hour: game.hour,
