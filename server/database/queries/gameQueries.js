@@ -30,7 +30,7 @@ const getDataGame = async (game_id) => {
                 model: TeamPlayerModel,
                 attributes: ['team_id','score'],
                 include:[ 
-                    { model: PlayerModel, attributes: ['firstname','lastname','number'] } 
+                    { model: PlayerModel, attributes: ['id','firstname','lastname','number'] } 
                 ]
             },
             {

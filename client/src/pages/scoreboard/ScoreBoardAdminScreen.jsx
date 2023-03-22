@@ -12,56 +12,27 @@ export const ScoreBoardAdminScreen = () => {
 
     const [game, setGame] = useState(
         {
+            game_id: 0,
             description: '',
+            date: '',
+            hour: '',
+            quarter: 0,
             team_a: {
                 id: 0,
                 description: '',
                 score: 0,
                 fouls: 0,
+                players:[]
             },
             team_b: {
                 id: 0,
                 description: '',
                 score: 0,
                 fouls: 0,
+                players:[]
             },
         }
     );
-
-    const players = [
-        {
-            firstname:'Leo',
-            lastname:'Broh',
-            document:'213123',
-            picture,
-            number:'2',
-            captain:'0'
-        },
-        {
-            firstname:'Patrick',
-            lastname:'Jhonson',
-            document:'213434',
-            picture,
-            number:'22',
-            captain:'1'
-        },
-        {
-            firstname:'Charles',
-            lastname:'Douglas',
-            document:'12988989',
-            picture,
-            number:'32',
-            captain:'0'
-        },
-        {
-            firstname:'Bejamin',
-            lastname:'Franklin',
-            document:'9878922',
-            picture,
-            number:'23',
-            captain:'0'
-        },
-    ]
 
     useEffect( () => {
         getDataGame(1);
@@ -87,10 +58,10 @@ export const ScoreBoardAdminScreen = () => {
         </div>
         <div className="row">
             <div className='col-6'>
-                <ScorePlayer players={ players }/>
+                <ScorePlayer game={ game.id } setGame={setGame} players={ game.team_a.players }/>
             </div>        
             <div className='col-6'>
-                <ScorePlayer players={ players }/>
+                <ScorePlayer game={ game.id } setGame={setGame} players={ game.team_b.players }/>
             </div>        
         </div>
     </Fragment>

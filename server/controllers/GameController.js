@@ -2,6 +2,7 @@ const { getDataGame } = require("../database/queries/gameQueries");
 const { getInfoGameFormat } = require("../formats/gameFormats");
 
 const GameModel = require("../models/GameModel");
+const GameScoreBoardModel = require("../models/GameScoreBoardModel");
 
 const getInfoGame = async (game_id) => {
     const game = await getDataGame(game_id);
