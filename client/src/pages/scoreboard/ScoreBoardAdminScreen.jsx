@@ -1,14 +1,19 @@
 import React, { Fragment, useState, useEffect } from 'react'
+import config from "../../config/config.json";
+
+/****Custo Hooks****/
+import { useFetch } from "../../hooks/useFetch";
 
 import { GameInfo } from '../../components/GameInfo';
 import { ScoreGame } from '../../components/ScoreGame';
 
 import { ScorePlayer } from '../../components/ScorePlayer';
-import { getGame } from '../../requests/gameRequest';
+
+const URL_API = config.API_URL;
 
 export const ScoreBoardAdminScreen = () => {
     
-    const picture = "https://placehold.co/128x128";
+    const { data, loading, error } = useFetch(`${ URL_API }/game/1`);
 
     const [game, setGame] = useState(
         {
@@ -34,16 +39,11 @@ export const ScoreBoardAdminScreen = () => {
         }
     );
 
-    useEffect( () => {
-        getDataGame(1);
-    }, [])
-
-    const getDataGame = async (id) => {
-        getGame(id).then( data => {
-            setGame(data.game);
-        });
-    }
-
+    useEffect(  ()  => {
+        if(data){
+            setGame(data.game)
+        }
+    }, [data])
 
     return (
     <Fragment>

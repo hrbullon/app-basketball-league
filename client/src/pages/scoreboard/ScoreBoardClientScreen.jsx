@@ -1,13 +1,34 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import { getGame } from '../../requests/gameRequest';
+import config from "../../config/config.json";
+
+//****Custom hooks****/
+import { useCountdown } from "../../hooks/useCountdown";
+import { useFetch } from "../../hooks/useFetch";
 
 //****SockET Connection****/
 import { socket } from "../../sockets/SocketClient";
 
+const URL_API = config.API_URL;
+
 export const ScoreBoardClientScreen = () => {
+
+    const { 
+        countdown, 
+        setCountdown, 
+        startCountdown, 
+        stopCountdown, 
+        formatTime 
+    } = useCountdown(600,"quarter");
     
-    const [seconds, setSeconds] = useState(10 * 60);
-    const [isActive, setIsActive] = useState(false);
+    const { 
+        countdown: seconds, 
+        setCountdown: setSeconds, 
+        startCountdown: startSeconds, 
+        stopCountdown: stopSeconds, 
+    } = useCountdown(12, "seconds");
+    
+    const { data, loading, error } = useFetch(`${ URL_API }/game/1`);
+
     const [game, setGame] = useState(
         {
             description: '',
@@ -29,81 +50,51 @@ export const ScoreBoardClientScreen = () => {
             },
         }
     );
+
+    useEffect(  ()  => {
+        if(data){
+            setGame(data.game)
+        }
+    }, [data])
+    
       
     useEffect( () => {
-        getDataGame(1);
 
-        const localTime  = localStorage.getItem("seconds");
-        if(localTime){
-            setSeconds(localTime-1);
+        const quarter  = localStorage.getItem("quarter");
+        const seconds  = localStorage.getItem("seconds");
+
+        if(quarter && seconds){
+            setCountdown(quarter-1);
+            setSeconds(seconds-1);
         }
 
     }, [])
 
-    useEffect(() => {
-        console.log("acc")
-        //getDataGame(game.id);
-    }, [game])
+    const handleStartCountDown = () => {
+        startCountdown();
+        startSeconds();
+    }
     
-
-    const getDataGame = async (id) => {
-        getGame(id).then( data => {
-            setGame(data.game);
-        });
+    const handleStopCountDown = () => {
+        stopCountdown();
+        stopSeconds();
     }
 
     useEffect(() => {
         socket.on("evt_game_scoreboard_inserted", (model) => {
-            setIsActive(false);
+            handleStopCountDown();
             setGame(model)
         })
 
         socket.on("evt_start_time", (model) => {
-            setIsActive(true);
+            handleStartCountDown();
         })
         
         socket.on("evt_stop_time", (model) => {
-            setIsActive(false);
+            handleStartCountDown();
         })
     }, [])
     
-    useEffect(() => {
-        
-        let interval = null;
-        
-        if (isActive) {
-            
-            interval = setInterval(() => {
-            setSeconds((seconds) => seconds - 1);
-            localStorage.setItem("seconds", seconds);
-
-            }, 1000);
-        } else if (!isActive && seconds !== 0) {
-            clearInterval(interval);
-        }
-        return () => clearInterval(interval);
-
-    }, [isActive, seconds]);
-    
-    const handleStart = () => {
-        setIsActive(true);
-    };
-
-    const handlePause = () => {
-        setIsActive(false);
-    };
-
-    const handleReset = () => {
-        setIsActive(false);
-        setSeconds(10 * 60);
-    };
-
-    const formatTime = (time) => {
-        const minutes = Math.floor(time / 60);
-        const seconds = time % 60;
-        return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    };
-
     return (
     <Fragment>
         <section className="timer-gray">
@@ -116,7 +107,7 @@ export const ScoreBoardClientScreen = () => {
         <section className="timer">
             <div className="row">
                 <div className="col">
-                    <p>{formatTime(seconds)}</p>
+                    <p>{formatTime(countdown)}</p>
                 </div>
             </div>
         </section>
@@ -132,19 +123,16 @@ export const ScoreBoardClientScreen = () => {
                 <div className="col-1 info foul">{`F${game.team_b.fouls}`}</div>
             </div>
         </section>
-        <button onClick={handleStart}>Start</button>
-        <button onClick={handlePause}>Pause</button>
-        <button onClick={handleReset}>Reset</button>
+
         <section className="score">
             <div className="row">
                 <div className="col-4">{ game.team_a.score }</div>
                 <div className="col-4">
-                    <p id="timeShot"></p>
+                    <p id="timeShot">{seconds}</p>
                 </div>
                 <div className="col-4">{ game.team_b.score }</div>
             </div>
         </section>
-
     </Fragment>
   )
 }
